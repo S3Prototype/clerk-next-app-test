@@ -1,68 +1,84 @@
 "use client";
-import { useAuth } from "@clerk/clerk-react";
 import { createClient } from "@supabase/supabase-js";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
-const supabaseClient = async (supabaseAccessToken: string | null) => {
-  const supabase = createClient(
+// Add clerk to Window to avoid type errors
+declare global {
+  interface Window {
+    Clerk: any;
+  }
+}
+
+function createClerkSupabaseClient() {
+  return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
     process.env.NEXT_PUBLIC_SUPABASE_KEY ?? "",
     {
-      global: { headers: { Authorization: `Bearer ${supabaseAccessToken}` } },
+      global: {
+        // Get the Supabase token with a custom fetch method
+        fetch: async (url, options = {}) => {
+          const clerkToken = await window.Clerk.session?.getToken({
+            template: "supabase",
+          });
+
+          // Construct fetch headers
+          const headers = new Headers(options?.headers);
+          headers.set("Authorization", `Bearer ${clerkToken}`);
+
+          // Now call the default fetch
+          return fetch(url, {
+            ...options,
+            headers,
+          });
+        },
+      },
     }
   );
-  // set Supabase JWT on the client object,
-  // so it is sent up with all Supabase requests
-  return supabase;
-};
+}
 
-export default function Home() {
-  const { getToken } = useAuth();
+export default function Supabase() {
+  const client = createClerkSupabaseClient();
 
-  const fetchData = async () => {
-    // Replace with your JWT template name
-    const supabaseAccessToken = await getToken({ template: "supabase" });
-    const supabase = await supabaseClient(supabaseAccessToken);
-
-    // Replace with your database table name
-    const { data, error } = await supabase.from("your_table").select();
-
-    // Handle the response
-
-    console.log("Data", data);
-    console.log("-------------");
-    console.log("Error", error);
-
-    setFetchedData(data);
-    setFetchedError(error);
+  const [addresses, setAddresses] = useState<any>();
+  const listAddresses = async () => {
+    // Fetches all addresses scoped to the user
+    // Replace "Addresses" with your table name
+    const { data, error } = await client.from("Posts").select();
+    if (!error) setAddresses(data);
   };
 
-  const [fetchedData, setFetchedData] = useState<any>(null);
-  const [fetchedError, setFetchedError] = useState<any>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const sendAddress = async () => {
+    if (!inputRef.current?.value) return;
+    await client.from("Posts").insert({
+      user_id: window.Clerk.session?.user.id,
+      // Replace content with whatever field you want
+      content: inputRef.current?.value,
+    });
+  };
 
   return (
     <>
-      <div>
-        <button
-          style={{
-            color: "black",
-            background: "white",
-            padding: "15px",
-            margin: "15px",
-          }}
-          onClick={fetchData}
-        >
-          Fetch data
-        </button>
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        <input
+          onSubmit={sendAddress}
+          style={{ color: "black" }}
+          type="text"
+          ref={inputRef}
+        />
+        <button onClick={sendAddress}>Send Address</button>
+        <button onClick={listAddresses}>Fetch Addresses</button>
       </div>
-      <h2>Data</h2>
-      <p>
-        <code>{fetchedData?.length ? fetchedData : "No data"}</code>
-      </p>
-      <h2>Errors</h2>
-      <p>
-        <code>{fetchedError?.length ? fetchedError : "No errors"}</code>
-      </p>
+      <h2>Addresses</h2>
+      {!addresses ? (
+        <p>No addresses</p>
+      ) : (
+        <ul>
+          {addresses.map((address: any) => (
+            <li key={address.id}>{address.content}</li>
+          ))}
+        </ul>
+      )}
     </>
   );
 }
