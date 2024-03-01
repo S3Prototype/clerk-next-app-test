@@ -10,6 +10,10 @@ declare global {
 }
 
 function createClerkSupabaseClient() {
+  console.log(
+    "Create clerk client called. window.Clerk exists?",
+    Boolean(window.Clerk)
+  );
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
     process.env.NEXT_PUBLIC_SUPABASE_KEY ?? "",
@@ -17,6 +21,10 @@ function createClerkSupabaseClient() {
       global: {
         // Get the Supabase token with a custom fetch method
         fetch: async (url, options = {}) => {
+          console.log(
+            "window.Clerk exists at moment of creation?:",
+            Boolean(window.Clerk)
+          );
           const clerkToken = await window.Clerk.session?.getToken({
             template: "supabase",
           });
@@ -36,9 +44,9 @@ function createClerkSupabaseClient() {
   );
 }
 
-export default function Supabase() {
-  const client = createClerkSupabaseClient();
+const client = createClerkSupabaseClient();
 
+export default function Supabase() {
   const [addresses, setAddresses] = useState<any>();
   const listAddresses = async () => {
     // Fetches all addresses scoped to the user
@@ -51,7 +59,6 @@ export default function Supabase() {
   const sendAddress = async () => {
     if (!inputRef.current?.value) return;
     await client.from("Posts").insert({
-      user_id: window.Clerk.session?.user.id,
       // Replace content with whatever field you want
       content: inputRef.current?.value,
     });

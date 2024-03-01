@@ -20,22 +20,22 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ClerkProvider>
-          <ClerkLoaded>
-            <div
-              className="h-screen"
-              style={{
-                width: 60,
-                height: 60,
-                marginLeft: "auto",
-                marginTop: 20,
-              }}
-            >
-              {" "}
-              <UserButton afterSignOutUrl="/" />
-              {/* <UserProfile appearance={{}} /> */}
-            </div>
-            {children}
-          </ClerkLoaded>
+          {/* <ClerkLoaded> */}
+          <div
+            className="h-screen"
+            style={{
+              width: 60,
+              height: 60,
+              marginLeft: "auto",
+              marginTop: 20,
+            }}
+          >
+            {" "}
+            <UserButton afterSignOutUrl="/" />
+            {/* <UserProfile appearance={{}} /> */}
+          </div>
+          {children}
+          {/* </ClerkLoaded> */}
         </ClerkProvider>
       </body>
     </html>
