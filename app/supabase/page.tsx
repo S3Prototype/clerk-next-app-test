@@ -22,7 +22,7 @@ function createClerkSupabaseClient() {
         // Get the Supabase token with a custom fetch method
         fetch: async (url, options = {}) => {
           console.log(
-            "window.Clerk exists at moment of creation?:",
+            "window.Clerk exists at moment fetch called?:",
             Boolean(window.Clerk)
           );
           const clerkToken = await window.Clerk.session?.getToken({
