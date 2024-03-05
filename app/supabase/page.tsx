@@ -1,5 +1,5 @@
 "use client";
-import useClerkSupabaseClient from "@/utils/useClerkSupabaseClient";
+import { ClerkLoaded } from "@clerk/nextjs";
 import { createClient } from "@supabase/supabase-js";
 import { useRef, useState } from "react";
 
@@ -13,7 +13,7 @@ declare global {
 function createClerkSupabaseClient() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
-    process.env.NEXT_PUBLIC_SUPABASE_KEY ?? "",
+    process.env.NEXT_PUBLIC_SERVICE_ROLE_KEY ?? "",
     {
       global: {
         // Get the Supabase token with a custom fetch method
@@ -37,14 +37,13 @@ function createClerkSupabaseClient() {
   );
 }
 
+const client = createClerkSupabaseClient();
+
 export default function Supabase() {
-  const getClient = useClerkSupabaseClient();
-  const client = getClient();
   const [addresses, setAddresses] = useState<any>();
   const listAddresses = async () => {
     // Fetches all addresses scoped to the user
     // Replace "Addresses" with your table name
-    if (!client) throw new Error("Failed to create supabase client");
     const { data, error } = await client.from("Posts").select();
     if (!error) setAddresses(data);
   };
@@ -52,24 +51,38 @@ export default function Supabase() {
   const inputRef = useRef<HTMLInputElement>(null);
   const sendAddress = async () => {
     if (!inputRef.current?.value) return;
-    if (!client) throw new Error("Failed to create supabase client");
     await client.from("Posts").insert({
       // Replace content with whatever field you want
       content: inputRef.current?.value,
     });
   };
 
+  const updateUser = async () => {
+    const supbaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
+      process.env.NEXT_PUBLIC_SERVICE_ROLE_KEY ?? ""
+    );
+    const { data, error } = await supbaseAdmin.auth.admin.updateUserById(
+      "339d9f1b-4b7e-47f2-a90a-76d59ad4637a",
+      {
+        user_metadata: {
+          display_name: "custom display name",
+          name: "custom name",
+          first_name: "custom first name",
+          second_name: "custom second name",
+        },
+      }
+    );
+    console.log("Data:", data, "Error:", JSON.stringify(error, null, 2));
+  };
+
   return (
     <>
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <input
-          onSubmit={sendAddress}
-          style={{ color: "black" }}
-          type="text"
-          ref={inputRef}
-        />
+        <input onSubmit={sendAddress} type="text" ref={inputRef} />
         <button onClick={sendAddress}>Send Address</button>
         <button onClick={listAddresses}>Fetch Addresses</button>
+        <button onClick={updateUser}>Update</button>
       </div>
       <h2>Addresses</h2>
       {!addresses ? (

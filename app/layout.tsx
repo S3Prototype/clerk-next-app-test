@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkLoaded, ClerkProvider, UserProfile } from "@clerk/nextjs";
 import { UserButton } from "@clerk/nextjs";
+import Header from "@/components/Header";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,22 +21,22 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ClerkProvider>
-          {/* <ClerkLoaded> */}
-          <div
-            className="h-screen"
-            style={{
-              width: 60,
-              height: 60,
-              marginLeft: "auto",
-              marginTop: 20,
-            }}
-          >
-            {" "}
-            <UserButton afterSignOutUrl="/" />
-            {/* <UserProfile appearance={{}} /> */}
-          </div>
-          {children}
-          {/* </ClerkLoaded> */}
+          <Header />
+          <ClerkLoaded>
+            <div
+              className="h-screen"
+              style={{
+                width: 60,
+                height: 60,
+                marginLeft: "auto",
+                marginTop: 20,
+              }}
+            >
+              {" "}
+              {/* <UserProfile appearance={{}} /> */}
+            </div>
+            {children}
+          </ClerkLoaded>
         </ClerkProvider>
       </body>
     </html>
