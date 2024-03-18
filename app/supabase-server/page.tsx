@@ -1,3 +1,4 @@
+import { EnrollMFA } from "@/components/EnrollMFA";
 import { auth } from "@clerk/nextjs/server";
 import { CookieOptions, createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
@@ -13,6 +14,11 @@ async function createClerkSupabaseClient() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_KEY!,
     {
+      auth: {
+        autoRefreshToken: false, // All my Supabase access is from server, so no need to refresh the token
+        detectSessionInUrl: false, // We are not using OAuth, so we don't need this. Also, we are manually "detecting" the session in the server-side code
+        persistSession: false, // All our access is from server, so no need to persist the session to browser's local storage
+      },
       global: { headers: { "Cache-Control": "no-store", ...authToken } },
       cookies: {
         get(name: string) {
