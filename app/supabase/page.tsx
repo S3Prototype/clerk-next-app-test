@@ -80,26 +80,26 @@ export default function Supabase() {
     console.log("Data:", data, "Error:", JSON.stringify(error, null, 2));
   };
 
-  return <EnrollMFA supabase={client} />;
+  // return <EnrollMFA supabase={client} />;
 
-  // return (
-  //   <>
-  //     <div style={{ display: "flex", flexDirection: "column" }}>
-  //       <input onSubmit={sendAddress} type="text" ref={inputRef} />
-  //       <button onClick={sendAddress}>Send Address</button>
-  //       <button onClick={listAddresses}>Fetch Addresses</button>
-  //       <button onClick={updateUser}>Update</button>
-  //     </div>
-  //     <h2>Addresses</h2>
-  //     {!addresses ? (
-  //       <p>No addresses</p>
-  //     ) : (
-  //       <ul>
-  //         {addresses.map((address: any) => (
-  //           <li key={address.id}>{address.content}</li>
-  //         ))}
-  //       </ul>
-  //     )}
-  //   </>
-  // );
+  return (
+    <>
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        <input onSubmit={sendAddress} type="text" ref={inputRef} />
+        <button onClick={sendAddress}>Send Address</button>
+        <button onClick={listAddresses}>Fetch Addresses</button>
+        <button onClick={updateUser}>Update</button>
+      </div>
+      <h2>Addresses</h2>
+      {!addresses ? (
+        <p>No addresses</p>
+      ) : (
+        <ul>
+          {addresses.map((address: any) => (
+            <li key={address.id}>{address.content}</li>
+          ))}
+        </ul>
+      )}
+    </>
+  );
 }
