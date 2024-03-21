@@ -3,14 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev-passkeys": "next dev -p 3000",
+    "dev": "next dev -p 3007",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
     "@clerk/clerk-js": "^5.0.0-beta.33",
-    "@clerk/nextjs": "^4.29.6",
+    "@clerk/nextjs": "^5.0.0-beta.35",
     "@supabase/ssr": "^0.1.0",
     "@supabase/supabase-js": "^2.39.6",
     "next": "14.1.0",
