@@ -10,22 +10,20 @@ export function RenamePasskeyUI() {
   const { passkeys } = user;
   const [success, setSuccess] = useState(false);
 
-  const renamePasskey = () => {
-    (async () => {
-      try {
-        const passkeyToUpdate = passkeys?.find(
-          (pk: PasskeyResource) => pk.id === passkeyToUpdateId.current?.value
-        );
-        const response = await passkeyToUpdate?.update({
-          name: newPasskeyName.current?.value,
-        });
-        console.log(response);
-        setSuccess(true);
-      } catch (error) {
-        console.log(error);
-        setSuccess(false);
-      }
-    })();
+  const renamePasskey = async () => {
+    try {
+      const passkeyToUpdate = passkeys?.find(
+        (pk: PasskeyResource) => pk.id === passkeyToUpdateId.current?.value
+      );
+      const response = await passkeyToUpdate?.update({
+        name: newPasskeyName.current?.value,
+      });
+      console.log(response);
+      setSuccess(true);
+    } catch (error) {
+      console.log(error);
+      setSuccess(false);
+    }
   };
 
   return (

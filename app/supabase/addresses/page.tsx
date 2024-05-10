@@ -48,17 +48,25 @@ export default function Supabase() {
   const listAddresses = async () => {
     // Fetches all addresses scoped to the user
     // Replace "Addresses" with your table name
-    const { data, error } = await client.from("Posts").select();
-    if (!error) setAddresses(data);
+    const { data, error } = await client.from("Addresses").select();
+    updateAddressList(data, error);
   };
 
   const inputRef = useRef<HTMLInputElement>(null);
   const sendAddress = async () => {
     if (!inputRef.current?.value) return;
-    await client.from("Posts").insert({
+    await client.from("Addresses").insert({
       // Replace content with whatever field you want
       content: inputRef.current?.value,
     });
+    await listAddresses();
+  };
+
+  const updateAddressList = (data: any, error: any) => {
+    if (!error) setAddresses(data);
+    console.log("Error", error);
+    console.log("Data", data);
+    if (inputRef?.current?.value) inputRef.current.value = "";
   };
 
   const updateUser = async () => {
@@ -80,10 +88,8 @@ export default function Supabase() {
     console.log("Data:", data, "Error:", JSON.stringify(error, null, 2));
   };
 
-  // return <EnrollMFA supabase={client} />;
-
   return (
-    <>
+    <div style={{ margin: "40px" }}>
       <div style={{ display: "flex", flexDirection: "column" }}>
         <input onSubmit={sendAddress} type="text" ref={inputRef} />
         <button onClick={sendAddress}>Send Address</button>
@@ -91,7 +97,7 @@ export default function Supabase() {
         <button onClick={updateUser}>Update</button>
       </div>
       <h2>Addresses</h2>
-      {!addresses ? (
+      {!addresses || addresses.length <= 0 ? (
         <p>No addresses</p>
       ) : (
         <ul>
@@ -100,6 +106,6 @@ export default function Supabase() {
           ))}
         </ul>
       )}
-    </>
+    </div>
   );
 }

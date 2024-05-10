@@ -4,19 +4,10 @@ import { auth } from "@clerk/nextjs";
 export async function GET() {
   const { userId, getToken } = auth();
 
-  // if (!userId) {
-  //   return new Response("Unauthorized", { status: 401 });
-  // }
+  let value = "Yo";
+  await getToken({ template: "integration_firebase" })
+    .then((result) => (value = result))
+    .catch((error) => (value = error));
 
-  try {
-    const token = await getToken({ template: "supabase" });
-  } catch (error) {
-    return Response.json({ error });
-  }
-
-  // Add logic here to fetch data from Supabase and return it.
-
-  const data = { supabaseData: "Hello World" };
-
-  return Response.json(data);
+  return Response.json(value);
 }

@@ -9,20 +9,18 @@ export function DeletePasskeyUI() {
   const passkeys = user?.__experimental_passkeys;
   const [success, setSuccess] = useState(false);
 
-  const deletePasskey = () => {
-    (async () => {
-      try {
-        const passkeyToDelete = passkeys?.find(
-          (pk: any) => pk.id === passkeyToDeleteId.current?.value
-        );
-        const response = await passkeyToDelete?.delete();
-        console.log("Response", response);
-        setSuccess(true);
-      } catch (error) {
-        console.log("Error", error);
-        setSuccess(false);
-      }
-    })();
+  const deletePasskey = async () => {
+    try {
+      const passkeyToDelete = passkeys?.find(
+        (pk: any) => pk.id === passkeyToDeleteId.current?.value
+      );
+      const response = await passkeyToDelete?.delete();
+      console.log("Response", response);
+      setSuccess(true);
+    } catch (error) {
+      console.log("Error", error);
+      setSuccess(false);
+    }
   };
 
   return (
