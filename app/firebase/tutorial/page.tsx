@@ -53,5 +53,3 @@ export default function FirebaseUI() {
     </main>
   );
 }
-
-export const x = auth;
